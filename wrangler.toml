@@ -8,8 +8,8 @@ crons = ["0 * * * *"]
 
 [[kv_namespaces]]
 binding = "KV"
-id = "odd702e792f84267a331449eaa7ce0c7"
-preview_id = "odd702e792f84267a331449eaa7ce0c7"
+id = "0dd702e792f84267a331449eaa7ce0c7"
+preview_id = "0dd702e792f84267a331449eaa7ce0c7"
 
 [vars]
 SPEED_TIMEOUT_MS = "5000"
