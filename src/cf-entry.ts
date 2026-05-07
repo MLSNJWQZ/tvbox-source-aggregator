@@ -14,6 +14,7 @@ interface CfEnv {
   SITE_TIMEOUT_MS?: string;
   FETCH_TIMEOUT_MS?: string;
   WORKER_BASE_URL?: string;
+  ACCESS_KEY?: string; // 👈 多密码支持
 }
 
 function buildConfig(env: CfEnv): AppConfig {
@@ -28,7 +29,23 @@ function buildConfig(env: CfEnv): AppConfig {
 }
 
 export default {
-  async fetch(request: Request, env: CfEnv, ctx: ExecutionContext): Promise<Response> {
+  async fetch(请求: Request, env: CfEnv, ctx: ExecutionContext): Promise<Response> {
+
+    // ==========================================
+    // 🔥 多密码验证（已帮你加好，直接生效）
+    // ==========================================
+    const validKeys = env.ACCESS_KEY ? env.ACCESS_KEY.split(",") : [];
+    const url = new 网站(请求.url);
+    const key = url.searchParams.get("key");
+
+    if (!key || !validKeys.includes(key)) {
+      return new Response("访问被拒绝：密码错误", {
+        status: 403,
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+      });
+    }
+    // ==========================================
+
     const storage = new KVStorage(env.KV);
     const config = buildConfig(env);
 
@@ -38,7 +55,7 @@ export default {
       triggerRefresh: () => runAggregation(storage, config),
     });
 
-    return app.fetch(request, env, ctx);
+    return app.fetch(请求, env, ctx);
   },
 
   async scheduled(_event: ScheduledEvent, env: CfEnv, ctx: ExecutionContext): Promise<void> {
