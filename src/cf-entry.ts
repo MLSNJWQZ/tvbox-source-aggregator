@@ -14,7 +14,7 @@ interface CfEnv {
   SITE_TIMEOUT_MS?: string;
   FETCH_TIMEOUT_MS?: string;
   WORKER_BASE_URL?: string;
-  ACCESS_KEY?: string; // 👈 多密码支持
+  ACCESS_KEY?: string;
 }
 
 function buildConfig(env: CfEnv): AppConfig {
@@ -31,9 +31,7 @@ function buildConfig(env: CfEnv): AppConfig {
 export default {
   async fetch(请求: Request, env: CfEnv, ctx: ExecutionContext): Promise<Response> {
 
-    // ==========================================
-    // 🔥 多密码验证（已帮你加好，直接生效）
-    // ==========================================
+    // 多密码验证
     const validKeys = env.ACCESS_KEY ? env.ACCESS_KEY.split(",") : [];
     const url = new 网站(请求.url);
     const key = url.searchParams.get("key");
@@ -44,7 +42,6 @@ export default {
         headers: { "Content-Type": "text/plain; charset=utf-8" },
       });
     }
-    // ==========================================
 
     const storage = new KVStorage(env.KV);
     const config = buildConfig(env);
@@ -62,7 +59,6 @@ export default {
     const storage = new KVStorage(env.KV);
     const config = buildConfig(env);
 
-    // 间隔检查：wrangler.toml 每小时触发，但按用户配置的间隔决定是否执行
     const intervalRaw = await storage.get(KV_CRON_INTERVAL);
     const intervalMinutes = intervalRaw ? parseInt(intervalRaw) : DEFAULT_CRON_INTERVAL;
     const lastUpdateRaw = await storage.get(KV_LAST_UPDATE);
